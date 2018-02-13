@@ -1,0 +1,18 @@
+{
+    "hyperparameters":{
+        "window_size":2,
+        "vecSize":100,
+        "learningRate":0.05,
+        "iter":2500,
+        "alpha":0.75,
+        "MaxX":100
+    },
+    "other":{
+        "preprocessing_queue":[
+            "preprocessing.scale_and_center",
+            "preprocessing.dot_reduction",
+            "preprocessing.connect_lines"
+            ],
+        "use_anonymous":true
+    }
+}
