@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import json
 import zipfile
 import sys
@@ -10,7 +10,7 @@ with open('config.json') as json_data_file:
 #------------------------------BUILDING THE VOCAB DICT start-------------------------------------##
 #------------------------------------------------------------------------------------------##
 globIndx=0
-globCount=160
+globCount=170
 globInitPara=0
 globalStart=1
 globStepSize=100000
@@ -724,15 +724,21 @@ while(globCount>1):
     upTo=globalStart+globStepSize-1
     print "taking corpus from %d and ending at %d",globalStart,upTo
     fillCorpus(globalStart,upTo)
-    ResWhole=skipgram_model_loop(x_train,y_train,(ConfigJsondata["hyperparameters"]["dimen"]),globInitPara)
-    globInitPara=1
-    globalStart=upTo+1
+    iter=0
+    iterNum=(ConfigJsondata["hyperparameters"]["iter"])
+    while iter<iterNum:
+        ResWhole=skipgram_model_loop(x_train,y_train,(ConfigJsondata["hyperparameters"]["dimen"]),globInitPara)
+        print iter
+        globInitPara=1
+        globalStart=upTo+1
+        # globCount= globCount-1
+        #globUpto=(160-globCount+1)*100000
+        #print "left"
+        #print globCount
+        np.savetxt('w1.txt', ResWhole["W1"])
+        np.savetxt('w2.txt', ResWhole["W2"])
+        iter=iter+1
     globCount= globCount-1
-    #globUpto=(160-globCount+1)*100000
-    #print "left"
-    #print globCount
-    np.savetxt('w1.txt', ResWhole["W1"])
-    np.savetxt('w2.txt', ResWhole["W2"])
   
     
 
@@ -745,5 +751,4 @@ vocabWordsDictArr = np.asarray(vocabWordsDict).reshape(len(vocabWordsDict),1)
 print "Finished"
 res = np.concatenate((vocabWordsDictArr, res),axis=1)
 np.savetxt('vectors.txt', res, delimiter=" ", fmt="%s")
-
 
