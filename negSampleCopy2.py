@@ -37,7 +37,6 @@ for i,word in enumerate(vocabWordsDict):
    int2word[i] = word 
 print "The Vocab Size is :::"
 print vocabSize
-#print word2int
 #------------------------------------------------------------------------------------------##
 #------------------------------BUILDING THE VOCAB DICT end---------------------------------##
 #------------------------------------------------------------------------------------------##
@@ -158,9 +157,10 @@ sys.stdout.write("\n--------------------------------\n")
 #print sentDict[1]
 #Lets generate the training set according to window
 #data=[] #it will have one center word and its neighbours for many center words
-x_train =[]
-y_train=[]
+
 def fillCorpus(globalStart,globUpto):
+    x_train =[]
+    y_train=[]
 	data = []
 	WINDOW_SIZE = int(ConfigJsondata["hyperparameters"]["window_size"])
 	#for sentence in sentDict: #pick a sentence at a time
@@ -170,19 +170,6 @@ def fillCorpus(globalStart,globUpto):
 	    if(word_index>=WINDOW_SIZE & word_index<(corpus_size-10)):
 	        counter=0;
 	        while counter<WINDOW_SIZE:
-	            #0,1
-	            '''
-	            Sanity check
-	            print "word is..."
-	            print word 
-	            print word_index
-	            print "prev word is..."
-	            print corpus_raw[word_index-(counter)]
-	            print word_index-(counter)
-	            print "next word is..."
-	            print corpus_raw[word_index+counter+2]
-	            print word_index+counter+2
-	            '''
 	            if word in vocabWordsDict:
 	                vocabWordsDictCounter[word]=vocabWordsDictCounter[word]+1
 	                #print 'yoooooooo'
@@ -206,19 +193,7 @@ def fillCorpus(globalStart,globUpto):
 	                   # data.append([word, "markedUn"])# marking unknown 
 	                    
 	            counter=counter+1
-	            #for nb_word in sentence[max(word_index - WINDOW_SIZE, 0) : min(word_index + WINDOW_SIZE, len(sentence)) + 1] :  #all the neighbour word for "word"
-	               # if nb_word != word:
-	                   # data.append([word, nb_word])
-	#data is having the tuple
-	#------------------------------------------------------------------------------------------##
-	#------------------------------LOADING TEST DATA end-------------------------------------##
-	#------------------------------------------------------------------------------------------##
-	# Now we have data in pairs.
 
-
-	#------------------------------------------------------------------------------------------##
-	#------------------------------DATA TO ONE HOT VECTOR start--------------------------------##
-	#------------------------------------------------------------------------------------------##
 
 	x_train_real = [] # input word--Center word in our case
 	y_train_real = [] # output word---> nb word ! the one forming a tuple
@@ -242,8 +217,10 @@ def fillCorpus(globalStart,globUpto):
 	x_train = np.asarray(x_train_real).reshape(len(x_train_real),1)
 	#x_train = np.asarray(x_train_real)
 	y_train = np.asarray(y_train_real).reshape(len(y_train_real),1)
-
-	#print x_train.size
+    parameters = {"x_train": x_train,
+                  "y_train": y_train,}    
+    return parameters
+	print "Corpus is filled"
 #print y_train
 #------------------------------------------------------------------------------------------##
 #------------------------------DATA TO ONE HOT VECTOR end----------------------------------##
@@ -723,7 +700,9 @@ def skipgram_model_loop(X_raw, Y_raw, n_h,globInitPara):
 while(globCount>1):
     upTo=globalStart+globStepSize-1
     print "taking corpus from %d and ending at %d",globalStart,upTo
-    fillCorpus(globalStart,upTo)
+    parametersXY=fillCorpus(globalStart,upTo)
+    x_train=parametersXY["x_train"]
+    y_train=parametersXY["y_train"]
     iter=0
     iterNum=(ConfigJsondata["hyperparameters"]["iter"])
     while iter<iterNum:
@@ -731,10 +710,6 @@ while(globCount>1):
         print iter
         globInitPara=1
         globalStart=upTo+1
-        # globCount= globCount-1
-        #globUpto=(160-globCount+1)*100000
-        #print "left"
-        #print globCount
         np.savetxt('w1.txt', ResWhole["W1"])
         np.savetxt('w2.txt', ResWhole["W2"])
         iter=iter+1
