@@ -161,10 +161,13 @@ sys.stdout.write("\n--------------------------------\n")
 def fillCorpus(globalStart,globUpto):
     x_train =[]
     y_train=[]
-	data = []
-	WINDOW_SIZE = int(ConfigJsondata["hyperparameters"]["window_size"])
+    data = [] 
+    x_train_real = [] # input word--Center word in our case
+    y_train_real = [] # output word---> nb word ! the one forming a tuple
+    #print "-----------Length of the tuples----------------------"
+    WINDOW_SIZE = int(ConfigJsondata["hyperparameters"]["window_size"])
 	#for sentence in sentDict: #pick a sentence at a time
-	for word_index, word in enumerate(corpus_raw[globalStart:globUpto]):
+    for word_index, word in enumerate(corpus_raw[globalStart:globUpto]):
 	    #if word_index%100000 == 0:
 	        #print word
 	    if(word_index>=WINDOW_SIZE & word_index<(corpus_size-10)):
@@ -195,14 +198,10 @@ def fillCorpus(globalStart,globUpto):
 	            counter=counter+1
 
 
-	x_train_real = [] # input word--Center word in our case
-	y_train_real = [] # output word---> nb word ! the one forming a tuple
-	#print "-----------Length of the tuples----------------------"
-	sys.stdout.write("\n ------------The Tuple size-------------------- \n")
-	sys.stdout.write(str(len(data))) #len(data)
-	sys.stdout.write("\n --------------------------------\n")
-	#print "-----------------------------------------------------"
-	for indx,data_word in enumerate(data):
+    sys.stdout.write("\n ------------The Tuple size-------------------- \n")
+    sys.stdout.write(str(len(data))) #len(data)
+    sys.stdout.write("\n --------------------------------\n")
+    for indx,data_word in enumerate(data):
 	    #print data_word
 	    globIndx=indx
 	    if indx%100000==0:
@@ -214,13 +213,13 @@ def fillCorpus(globalStart,globUpto):
 
 
 	# convert them to numpy arrays
-	x_train = np.asarray(x_train_real).reshape(len(x_train_real),1)
+    x_train = np.asarray(x_train_real).reshape(len(x_train_real),1)
 	#x_train = np.asarray(x_train_real)
-	y_train = np.asarray(y_train_real).reshape(len(y_train_real),1)
+    y_train = np.asarray(y_train_real).reshape(len(y_train_real),1)
     parameters = {"x_train": x_train,
                   "y_train": y_train,}    
     return parameters
-	print "Corpus is filled"
+    print "Corpus is filled"
 #print y_train
 #------------------------------------------------------------------------------------------##
 #------------------------------DATA TO ONE HOT VECTOR end----------------------------------##
